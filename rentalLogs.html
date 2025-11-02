@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZaiReCycle | Rental Logs</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- Sidebar + Main Layout -->
+  <div class="d-flex" id="layout-wrapper">
+
+    <!-- Sidebar -->
+    <nav class="sidebar bg-dark text-white p-3 d-flex flex-column justify-content-between" id="sidebar">
+      <div>
+        <div class="sidebar-header text-center mb-4">
+          <img src="assets/logo_v3.png" alt="ZaiReCycle Logo" class="sidebar-logo mb-2">
+          <h5 class="fw-bold">ZaiReCycle</h5>
+        </div>
+
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link text-white" href="dashboard.html"><i class="fa-solid fa-house me-2"></i>Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="inventory.html"><i class="fa-solid fa-bicycle me-2"></i>Inventory</a></li>
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="rentalLogs.html"><i class="fa-solid fa-clipboard-list me-2"></i>Rental Logs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="archive.html"><i class="fa-solid fa-chart-line me-2"></i>Reports & Archive</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="management.html">
+              <i class="fa-solid fa-user-gear me-2"></i>Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="maintenance.html">
+              <i class="fa-solid fa-screwdriver-wrench me-2"></i>Maintenance
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Logout -->
+      <div class="text-center mt-auto">
+        <button id="logout" class="btn btn-danger w-100">
+          <i class="fa-solid fa-power-off me-2"></i>Logout
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 container mt-4 pt-3">
+      <h3 class="fw-bold mb-4">Rental Logs</h3>
+
+      <!-- Active Rentals -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <span><i class="fa-solid fa-bolt me-2"></i>Active Rentals</span>
+        </div>
+        <div class="card-body" id="active-rentals">
+          <div class="text-muted">Loading active rentals...</div>
+        </div>
+      </div>
+
+      <!-- Past Rentals -->
+      <div class="card shadow-sm mb-5">
+        <div class="card-header bg-dark text-white">
+          <i class="fa-solid fa-clock-rotate-left me-2"></i>Past Rentals
+        </div>
+        <div class="card-body">
+          <div class="accordion" id="pastRentalsAccordion">
+
+            <!-- Today -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingToday">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseToday" aria-expanded="true">
+                  Today
+                </button>
+              </h2>
+              <div id="collapseToday" class="accordion-collapse collapse show" data-bs-parent="#pastRentalsAccordion">
+                <div class="accordion-body" id="past-today">Loading...</div>
+              </div>
+            </div>
+
+            <!-- This Week -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingWeek">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWeek">
+                  This Week
+                </button>
+              </h2>
+              <div id="collapseWeek" class="accordion-collapse collapse" data-bs-parent="#pastRentalsAccordion">
+                <div class="accordion-body" id="past-week">Loading...</div>
+              </div>
+            </div>
+
+            <!-- This Month -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingMonth">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMonth">
+                  This Month
+                </button>
+              </h2>
+              <div id="collapseMonth" class="accordion-collapse collapse" data-bs-parent="#pastRentalsAccordion">
+                <div class="accordion-body" id="past-month">Loading...</div>
+              </div>
+            </div>
+
+            <!-- This Year -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingYear">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseYear">
+                  This Year
+                </button>
+              </h2>
+              <div id="collapseYear" class="accordion-collapse collapse" data-bs-parent="#pastRentalsAccordion">
+                <div class="accordion-body" id="past-year">Loading...</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/supabaseClient.js"></script>
+  <script type="module" src="js/rentalLogs.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZaiReCycle | Inventory</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div class="d-flex" id="layout-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-dark text-white p-3 d-flex flex-column justify-content-between" id="sidebar">
+      <div>
+        <div class="sidebar-header text-center mb-4">
+          <img src="assets/logo_v3.png" alt="ZaiReCycle Logo" class="sidebar-logo mb-2" />
+          <h5 class="fw-bold">ZaiReCycle</h5>
+        </div>
+
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="dashboard.html"><i class="fa-solid fa-house me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="inventory.html"><i class="fa-solid fa-bicycle me-2"></i>Inventory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="rentalLogs.html"><i class="fa-solid fa-clipboard-list me-2"></i>Rental Logs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="archive.html"><i class="fa-solid fa-chart-line me-2"></i>Reports & Archive</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="management.html"><i class="fa-solid fa-user-gear me-2"></i>Management</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="maintenance.html"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Maintenance</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-auto">
+        <button id="logout" class="btn btn-danger w-100"><i class="fa-solid fa-power-off me-2"></i>Logout</button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="flex-grow-1 p-4">
+              <!-- Mobile Toggle Button -->
+      <button class="btn btn-outline-dark d-lg-none mb-3" id="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h3 class="fw-bold mb-4">Inventory Management</h3>
+
+      <!-- Cycles Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <span>Cycles</span>
+          <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal" data-bs-target="#addCycleModal">
+            <i class="fa-solid fa-bicycle"></i> Add Cycle
+          </button>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Cycle Code</th>
+                <th>RFID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cyclesTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cycle Types Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <span>Cycle Types</span>
+          <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal" data-bs-target="#addTypeModal">
+            <i class="fa-solid fa-plus"></i> Add Type
+          </button>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Base Rate/min</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cycleTypesTableBody">
+              <tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <span>Pricing</span>
+          <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal" data-bs-target="#addPricingModal">
+            <i class="fa-solid fa-plus"></i> Add Pricing
+          </button>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Cycle Type</th>
+                <th>Region</th>
+                <th>Duration (min)</th>
+                <th>Price</th>
+                <th>Effective From</th>
+                <th>Effective To</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pricingTableBody">
+              <tr><td colspan="7" class="text-center text-muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Accessories Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <span>Accessories</span>
+          <button class="btn btn-light btn-sm admin-only" data-bs-toggle="modal" data-bs-target="#addAccessoryModal">
+            <i class="fa-solid fa-plus"></i> Add Accessory
+          </button>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Rental Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accessoriesTableBody">
+              <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modals (Cycle, Type, Pricing, Accessory) -->
+  <div id="modals-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/supabaseClient.js"></script>
+  <script type="module" src="js/inventory.js"></script>
+</body>
+  <!-- Sidebar Toggle -->
+  <script>
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("active");
+    });
+  </script>
+</html>

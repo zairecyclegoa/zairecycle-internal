@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZaiReCycle | Archive</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar Toggle Button for Mobile -->
+  <button class="btn btn-dark d-lg-none sidebar-toggle">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- Sidebar + Main Layout -->
+  <div class="d-flex" id="layout-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-dark text-white p-3 d-flex flex-column justify-content-between" id="sidebar">
+      <div>
+        <div class="sidebar-header text-center mb-4">
+          <img src="assets/logo_v3.png" alt="ZaiReCycle Logo" class="sidebar-logo mb-2" />
+          <h5 class="fw-bold">ZaiReCycle</h5>
+        </div>
+
+        <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link text-white" href="dashboard.html"><i class="fa-solid fa-house me-2"></i>Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="inventory.html"><i class="fa-solid fa-bicycle me-2"></i>Inventory</a></li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="rentalLogs.html"><i class="fa-solid fa-clipboard-list me-2"></i>Rental Logs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="archive.html"><i class="fa-solid fa-chart-line me-2"></i>Reports & Archive</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="management.html">
+              <i class="fa-solid fa-user-gear me-2"></i>Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="maintenance.html">
+              <i class="fa-solid fa-screwdriver-wrench me-2"></i>Maintenance
+            </a>
+          </li>  
+        </ul>
+      </div>
+
+      <div class="text-center mt-auto">
+        <button id="logout" class="btn btn-danger w-100"><i class="fa-solid fa-power-off me-2"></i>Logout</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+      <main class="container mt-4 pt-3">
+        <h3 class="fw-bold mb-4 ms-4 mt-2">Archive & Analytics</h3>
+
+        <!-- Summary Tiles -->
+        <div class="row mb-4" id="summary-tiles">
+          <div class="col-md-3 col-sm-6 mb-3"><div class="card text-center shadow-sm p-3"><h6 class="text-muted">Total Revenue</h6><h4 id="total-revenue" class="fw-bold text-success">--</h4></div></div>
+          <div class="col-md-3 col-sm-6 mb-3"><div class="card text-center shadow-sm p-3"><h6 class="text-muted">Total Rentals</h6><h4 id="total-rentals" class="fw-bold text-primary">--</h4></div></div>
+          <div class="col-md-3 col-sm-6 mb-3"><div class="card text-center shadow-sm p-3"><h6 class="text-muted">Unique Customers</h6><h4 id="unique-customers" class="fw-bold text-info">--</h4></div></div>
+          <div class="col-md-3 col-sm-6 mb-3"><div class="card text-center shadow-sm p-3"><h6 class="text-muted">Avg Duration</h6><h4 id="avg-duration" class="fw-bold text-warning">--</h4></div></div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-header bg-success text-white">Monthly Revenue</div>
+              <div class="card-body"><canvas id="revenueChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-header bg-success text-white">Rental Count Over Time</div>
+              <div class="card-body"><canvas id="rentalChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Insights -->
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-header bg-dark text-white">Top 5 Customers by Spend</div>
+              <div class="card-body" id="top-customers">Loading...</div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-header bg-dark text-white">Repeat vs New Customers</div>
+              <div class="card-body"><canvas id="repeatChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Rental History -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <span>All Completed Rentals</span>
+            <button class="btn btn-light btn-sm" id="refresh-archive"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            <div>
+            <button id="exportCsvBtn" class="btn btn-outline-primary btn-sm me-2">Export CSV</button>
+            <button id="exportXlsxBtn" class="btn btn-outline-success btn-sm">Export Excel</button>
+            </div>
+          </div>
+          <div class="card-body table-responsive">
+            <table class="table table-sm table-striped align-middle">
+              <thead class="table-dark">
+                <tr>
+                  <th>Date</th>
+                  <th>Cycle</th>
+                  <th>Customer</th>
+                  <th>Kiosk</th>
+                  <th>Duration</th>
+                  <th>Amount</th>
+                  <th>Payment Mode</th>
+                </tr>
+              </thead>
+              <tbody id="rental-history">
+                <tr><td colspan="7" class="text-muted text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/supabaseClient.js"></script>
+  <script type="module" src="js/archive.js"></script>
+
+  <script type="module">
+    import { supabase } from "./js/supabaseClient.js";
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) window.location.href = "login.html";
+    });
+    document.querySelector(".sidebar-toggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("show");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #e0e0e0;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-bottom: 2px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-left img {
+    height: 40px;
+    border-radius: 8px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#userName {
+    font-weight: 500;
+    color: #333;
+}
+
+#logoutBtn {
+    background-color: #e53935;
+    border: none;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
+#logoutBtn:hover {
+    background-color: #c62828;
+    transform: scale(1.05);
+}
+
+main {
+    padding: 30px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #212529;
+}
+
+.sidebar .logo {
+  width: 32px;
+  height: 32px;
+}
+
+.nav-link {
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background-color: #495057;
+}
+
+/* Main content area offset */
+#layout-wrapper .flex-grow-1 {
+  margin-left: 240px;
+}
+
+body {
+  background-color: #f4f4f4;
+}
+
+/* === LAYOUT FIX === */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+/* Wrapper holds sidebar + content side by side */
+#layout-wrapper {
+  display: flex;
+  min-height: 100vh; /* Full viewport height */
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 240px;
+  background-color: #212529;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0; /* Ensures it stretches full height */
+}
+
+.sidebar .logo {
+  width: 36px;
+  height: 36px;
+}
+
+.sidebar h5 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+  color: #dcdcdc;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: #495057;
+  color: #fff;
+}
+
+/* === MAIN CONTENT === */
+#layout-wrapper .flex-grow-1 {
+  margin-left: 240px; /* offset for sidebar */
+  padding-bottom: 40px;
+}
+
+/* === NAVBAR === */
+header.navbar {
+  background-color: #2d6a4f !important; /* deeper green */
+}
+
+#logout {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+#logout:hover {
+  background-color: #c0392b !important;
+}
+
+/* === CARD & PAGE === */
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.card-header {
+  font-weight: 600;
+}
+
+body {
+  background-color: #f1f1f1;
+}
+
+.sidebar-logo {
+  width: 60px; /* increase logo size */
+  height: auto;
+}
+
+/* === MOBILE SIDEBAR TOGGLE === */
+.sidebar-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background-color: #212529;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.sidebar-toggle:hover {
+  background-color: #343a40;
+}
+
+/* Hide sidebar by default on small screens */
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+    z-index: 1050;
+  }
+
+  #layout-wrapper .flex-grow-1 {
+    margin-left: 0 !important;
+  }
+}
+
+/* Adjust logo size on mobile */
+@media (max-width: 576px) {
+  .sidebar-logo {
+    width: 70px;
+  }
+}
+
+/* Sidebar full height */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* Adjust main content to not go under sidebar */
+#layout-wrapper .flex-grow-1 {
+  margin-left: 250px;
+}
+
+/* Sidebar logo */
+.sidebar-logo {
+  width: 100px;
+  border-radius: 8px;
+}
+
+/* Sidebar links */
+.sidebar .nav-link {
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Logout button at bottom */
+.sidebar #logout {
+  border-radius: 8px;
+  margin-top: auto;
+}
+
+/* Mobile responsiveness */
+.sidebar-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background-color: #212529;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+    z-index: 1050;
+  }
+
+  #layout-wrapper .flex-grow-1 {
+    margin-left: 0;
+  }
+
+  /* Add left margin to prevent title overlap with hamburger */
+  h3.ms-4 {
+    margin-left: 60px !important;
+  }
+}
+
+.admin-only {
+  display: none !important;
+}
+
+/* Sidebar defaults */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.active {
+  transform: translateX(-250px);
+}
+
+/* Sidebar responsive */
+@media (max-width: 992px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-250px);
+    z-index: 1050;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+/* Center modals nicely on small screens */
+.modal-dialog-centered {
+  margin: auto;
+}
+
+/* Fix table overflow on mobile */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.75rem;
+}
+.rental-card, .cycle-card {
+  background: #efefef;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
