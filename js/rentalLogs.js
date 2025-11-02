@@ -189,38 +189,38 @@ function renderActive(active) {
 
 
 function renderPastGrouped(past) {
-  // Convert to IST time and create proper inclusive groups
   const now = new Date();
 
-  // Convert now to IST
-  const istOffset = 5.5 * 60 * 60 * 1000;
-  const nowIST = new Date(now.getTime() + istOffset);
+  // Create Date objects at midnight *in IST*
+  const nowIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const todayStartIST = new Date(nowIST.getFullYear(), nowIST.getMonth(), nowIST.getDate());
+  const weekStartIST = new Date(todayStartIST);
+  // Set to Monday start (or Sunday if you prefer)
+  weekStartIST.setDate(todayStartIST.getDate() - todayStartIST.getDay());
+  const monthStartIST = new Date(nowIST.getFullYear(), nowIST.getMonth(), 1);
+  const yearStartIST = new Date(nowIST.getFullYear(), 0, 1);
 
-  const todayStart = new Date(nowIST.getFullYear(), nowIST.getMonth(), nowIST.getDate());
-  const weekStart = new Date(todayStart);
-  weekStart.setDate(todayStart.getDate() - todayStart.getDay()); // Sunday start
-  const monthStart = new Date(nowIST.getFullYear(), nowIST.getMonth(), 1);
-  const yearStart = new Date(nowIST.getFullYear(), 0, 1);
-
-  // Create group containers
   const groups = { today: [], week: [], month: [], year: [] };
 
   past.forEach(r => {
-    const start = new Date(r.out_time);
-    const startIST = new Date(start.getTime() + istOffset);
+    const start = parseDbTimestampToDate(r.out_time);
+    if (!start) return;
 
-    if (startIST >= todayStart) groups.today.push(r);
-    if (startIST >= weekStart) groups.week.push(r);
-    if (startIST >= monthStart) groups.month.push(r);
-    if (startIST >= yearStart) groups.year.push(r);
+    // Convert rental start to IST clock time for comparison
+    const startIST = new Date(start.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+
+    if (startIST >= todayStartIST) groups.today.push(r);
+    if (startIST >= weekStartIST) groups.week.push(r);
+    if (startIST >= monthStartIST) groups.month.push(r);
+    if (startIST >= yearStartIST) groups.year.push(r);
   });
 
-  // Render each group
   renderPastList(groups.today, 'past-today');
   renderPastList(groups.week, 'past-week');
   renderPastList(groups.month, 'past-month');
   renderPastList(groups.year, 'past-year');
 }
+
 
 
 function renderPastList(list, elementId) {

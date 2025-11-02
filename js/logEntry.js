@@ -100,51 +100,53 @@ function formatUTCmsToIST(utcMs) {
    - picks the last slab whose duration_minutes <= elapsedMinutes
    ============ */
 async function calculatePriceUsingSlabs(rentalStartIso, accessoriesIds = [], cycleTypeId = null, locationId = null) {
-  // compute elapsed minutes using UTC ms diff (timezone-agnostic)
+  // --- calculate elapsed time ---
   const startMs = parseTimestampToUTCms(rentalStartIso);
   const nowMs = Date.now();
   const minutes = Math.max(0, Math.ceil((nowMs - startMs) / 60000));
 
-  // fetch slabs for this cycle_type & location, ordered ascending
-  let slabPrice = null;
+  // --- fetch base pricing row ---
+  let perBlock = 0;
+  let blockMinutes = 15; // default
   if (cycleTypeId && locationId) {
-    const { data: slabs, error: slabErr } = await supabase
+    const { data: pricingRow, error } = await supabase
       .from('pricing')
       .select('duration_minutes, price')
       .eq('cycle_type_id', cycleTypeId)
       .eq('region_id', locationId)
-      .order('duration_minutes', { ascending: true });
+      .limit(1)
+      .maybeSingle();
 
-    if (slabErr) {
-      console.warn('pricing fetch error', slabErr);
-    } else if (slabs?.length) {
-      // choose last slab with duration_minutes <= minutes
-      let chosen = slabs[0];
-      for (const s of slabs) {
-        if (s.duration_minutes <= minutes) chosen = s;
-        else break;
-      }
-      slabPrice = Number(chosen.price) || 0;
+    if (error) console.warn('pricing fetch error', error);
+
+    if (pricingRow) {
+      perBlock = Number(pricingRow.price) || 0;
+      blockMinutes = Number(pricingRow.duration_minutes) || 15;
     }
   }
 
-  // fallback to base_rate_per_min (if no slabs found)
-  let baseRatePrice = 0;
-  if (!slabPrice && cycleTypeId) {
-    const { data: ct } = await supabase.from('cycle_types').select('base_rate_per_min').eq('id', cycleTypeId).maybeSingle();
-    baseRatePrice = (ct?.base_rate_per_min || 0) * minutes;
-  }
+  // --- compute cycle rental ---
+  const blocks = Math.ceil(minutes / blockMinutes);
+  let amount = blocks * perBlock;
 
-  // accessories sum
-  let accessoriesTotal = 0;
+  // --- add accessories total ---
   if (Array.isArray(accessoriesIds) && accessoriesIds.length) {
-    const { data: accRows } = await supabase.from('accessories').select('id, rental_price').in('id', accessoriesIds);
-    accessoriesTotal = (accRows || []).reduce((s, a) => s + (Number(a.rental_price) || 0), 0);
+    const { data: accRows } = await supabase
+      .from('accessories')
+      .select('id, rental_price')
+      .in('id', accessoriesIds);
+
+    const accessoriesTotal = (accRows || []).reduce(
+      (sum, a) => sum + (Number(a.rental_price) || 0),
+      0
+    );
+
+    amount += accessoriesTotal;
   }
 
-  const amount = (slabPrice !== null ? slabPrice : baseRatePrice) + accessoriesTotal;
-  return { amount: Number(amount), minutes };
+  return { amount: Number(amount.toFixed(2)), minutes };
 }
+
 
 /* ============
    Main flow: init + render

@@ -154,7 +154,7 @@ async function loadCycles() {
       <td>${escapeHtml(c.status || '-')}</td>
       <td>${c.locations?.name || '-'}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary me-1 edit-cycle-btn" data-id="${c.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-sm btn-outline-primary me-1 edit-cycle-btn admin-only" data-id="${c.id}"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-sm btn-outline-danger del-cycle-btn admin-only" data-id="${c.id}"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>
@@ -184,7 +184,7 @@ async function loadCycleTypesTable() {
       <td>${t.base_rate_per_min ?? '-'}</td>
       <td>${escapeHtml(t.description ?? '-')}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary me-1 edit-type-btn" data-id="${t.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-sm btn-outline-primary me-1 edit-type-btn admin-only" data-id="${t.id}"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-sm btn-outline-danger del-type-btn admin-only" data-id="${t.id}"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>
@@ -221,7 +221,7 @@ async function loadPricing() {
       <td>${formatDate(p.effective_from)}</td>
       <td>${p.effective_to ? formatDate(p.effective_to) : '-'}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary me-1 edit-pricing-btn" data-id="${p.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-sm btn-outline-primary me-1 edit-pricing-btn admin-only" data-id="${p.id}"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-sm btn-outline-danger del-pricing-btn admin-only" data-id="${p.id}"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>
@@ -253,7 +253,7 @@ async function loadAccessories() {
       <td>${a.rental_price}</td>
       <td>${escapeHtml(a.availability_status)}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary me-1 edit-accessory-btn" data-id="${a.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-sm btn-outline-primary me-1 edit-accessory-btn admin-only" data-id="${a.id}"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-sm btn-outline-danger del-accessory-btn admin-only" data-id="${a.id}"><i class="fa-solid fa-trash"></i></button>
       </td>
     </tr>
@@ -371,6 +371,7 @@ function openAddCycleModal() {
     clearModals();
     await loadCycles();
     showAlert('Cycle added successfully');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -454,6 +455,7 @@ async function openEditCycleModal(id) {
     clearModals();
     await loadCycles();
     showAlert('Cycle updated');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -466,6 +468,7 @@ async function deleteCycle(id) {
   if (error) return showAlert('Error deleting cycle: ' + error.message, 'danger');
   await loadCycles();
   showAlert('Cycle deleted');
+  await adjustUIForRole();
 }
 
 // ---------- Cycle Types Add/Edit/Delete ----------
@@ -510,6 +513,7 @@ function openAddTypeModal() {
     await loadCycleTypesTable();
     await loadCycles();
     showAlert('Cycle type added');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -559,6 +563,7 @@ async function openEditTypeModal(id) {
     await loadCycleTypesTable();
     await loadCycles();
     showAlert('Cycle type updated');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -572,6 +577,7 @@ async function deleteType(id) {
   await loadCycleTypesTable();
   await loadCycles();
   showAlert('Cycle type deleted');
+  await adjustUIForRole();
 }
 
 // ---------- Pricing Add/Edit/Delete ----------
@@ -633,6 +639,7 @@ function openAddPricingModal() {
     clearModals();
     await loadPricing();
     showAlert('Pricing added');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -709,6 +716,7 @@ async function deletePricing(id) {
   if (error) return showAlert('Error deleting pricing: ' + error.message, 'danger');
   await loadPricing();
   showAlert('Pricing deleted');
+  await adjustUIForRole();
 }
 
 // ---------- Accessories Add/Edit/Delete ----------
@@ -761,6 +769,7 @@ function openAddAccessoryModal() {
     clearModals();
     await loadAccessories();
     showAlert('Accessory added');
+    await adjustUIForRole();
   });
 
   modalEl.addEventListener('hidden.bs.modal', () => clearModals());
@@ -829,6 +838,7 @@ async function deleteAccessory(id) {
   if (error) return showAlert('Error deleting accessory: ' + error.message, 'danger');
   await loadAccessories();
   showAlert('Accessory deleted');
+  await adjustUIForRole();
 }
 
 async function adjustUIForRole() {
