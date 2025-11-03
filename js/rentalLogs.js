@@ -19,7 +19,7 @@ async function initRentalLogs() {
 async function loadRentals() {
   // Clear placeholders
   document.getElementById('active-rentals').innerHTML = '<div class="text-muted">Loading active rentals...</div>';
-  ['past-today','past-week','past-month','past-year'].forEach(id => {
+  ['past-today', 'past-week', 'past-month', 'past-year'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = 'Loading...';
   });
@@ -47,7 +47,7 @@ async function loadRentals() {
   if (error) {
     console.error('Error fetching rentals:', error);
     document.getElementById('active-rentals').innerHTML = '<div class="text-danger">Failed to load rentals. Check console.</div>';
-    ['past-today','past-week','past-month','past-year'].forEach(id => {
+    ['past-today', 'past-week', 'past-month', 'past-year'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = '<div class="text-danger">Failed to load rentals.</div>';
     });

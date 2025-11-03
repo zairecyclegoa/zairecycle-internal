@@ -377,7 +377,7 @@ async function startRentalHandler() {
 
     // 4. Accessories link + mark in_use
     if (checked.length) {
-      const rows = checked.map(id => ({ rental_id: rental.id, accessory_id: id, quantity: 1}));
+      const rows = checked.map(id => ({ rental_id: rental.id, accessory_id: id, quantity: 1 }));
       await supabase.from('rental_accessories').insert(rows);
       await supabase.from('accessories').update({ availability_status: 'in_use' }).in('id', checked);
     }

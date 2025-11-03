@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // dummy for safe removeEventListener
-function dummy(){}
+function dummy() { }
 
 // ------------------ Utilities ------------------
 

@@ -4,93 +4,93 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: "Inter", sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
 header {
-    background-color: #e0e0e0;
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-bottom: 2px solid #ccc;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-color: #e0e0e0;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-bottom: 2px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 header h2 {
-    margin: 0;
-    font-weight: 600;
-    font-size: 1.3rem;
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.3rem;
 }
 
 .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .header-left img {
-    height: 40px;
-    border-radius: 8px;
+  height: 40px;
+  border-radius: 8px;
 }
 
 .header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 #userName {
-    font-weight: 500;
-    color: #333;
+  font-weight: 500;
+  color: #333;
 }
 
 #logoutBtn {
-    background-color: #e53935;
-    border: none;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: 0.3s ease;
+  background-color: #e53935;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: 0.3s ease;
 }
 
 #logoutBtn:hover {
-    background-color: #c62828;
-    transform: scale(1.05);
+  background-color: #c62828;
+  transform: scale(1.05);
 }
 
 main {
-    padding: 30px;
+  padding: 30px;
 }
 
 .card {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card h3 {
-    margin-top: 0;
-    color: #333;
+  margin-top: 0;
+  color: #333;
 }
 
 footer {
-    text-align: center;
-    padding: 15px;
-    font-size: 0.9rem;
-    color: #666;
+  text-align: center;
+  padding: 15px;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 /* Sidebar Styling */
@@ -130,7 +130,8 @@ body {
 }
 
 /* === LAYOUT FIX === */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   background-color: #f4f4f4;
@@ -139,7 +140,8 @@ html, body {
 /* Wrapper holds sidebar + content side by side */
 #layout-wrapper {
   display: flex;
-  min-height: 100vh; /* Full viewport height */
+  min-height: 100vh;
+  /* Full viewport height */
 }
 
 /* === SIDEBAR === */
@@ -153,7 +155,8 @@ html, body {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0; /* Ensures it stretches full height */
+  bottom: 0;
+  /* Ensures it stretches full height */
 }
 
 .sidebar .logo {
@@ -183,13 +186,15 @@ html, body {
 
 /* === MAIN CONTENT === */
 #layout-wrapper .flex-grow-1 {
-  margin-left: 240px; /* offset for sidebar */
+  margin-left: 240px;
+  /* offset for sidebar */
   padding-bottom: 40px;
 }
 
 /* === NAVBAR === */
 header.navbar {
-  background-color: #2d6a4f !important; /* deeper green */
+  background-color: #2d6a4f !important;
+  /* deeper green */
 }
 
 #logout {
@@ -220,7 +225,8 @@ body {
 }
 
 .sidebar-logo {
-  width: 60px; /* increase logo size */
+  width: 60px;
+  /* increase logo size */
   height: auto;
 }
 
@@ -385,9 +391,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 0.75rem;
 }
-.rental-card, .cycle-card {
+
+.rental-card,
+.cycle-card {
   background: #efefef;
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }

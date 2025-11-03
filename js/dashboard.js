@@ -49,7 +49,7 @@ async function loadActiveRentals() {
   }
 
   const cardsHTML = data.map(r => {
-    const duration = getDurationMins(r.out_time)- 330;
+    const duration = getDurationMins(r.out_time) - 330;
     const loc = r.cycles?.locations?.name || 'Unknown';
     const customer = r.customers?.full_name || 'N/A';
     return `

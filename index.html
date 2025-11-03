@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,14 +11,15 @@
 <script>
   // Check active session when page loads
   document.addEventListener("DOMContentLoaded", async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
 
-  if (session) {
-    // User already logged in — redirect to dashboard
-    window.location.href = "dashboard.html";
-  }
-});
+    if (session) {
+      // User already logged in — redirect to dashboard
+      window.location.href = "dashboard.html";
+    }
+  });
 </script>
+
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
 
   <div class="card shadow-lg p-4" style="width: 350px;">
@@ -47,4 +49,5 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="js/auth.js"></script>
 </body>
+
 </html>

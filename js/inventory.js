@@ -41,7 +41,7 @@ async function initInventory() {
     loadAccessories()
   ]);
 
- await adjustUIForRole();
+  await adjustUIForRole();
 
 
   // attach logout (if present)
