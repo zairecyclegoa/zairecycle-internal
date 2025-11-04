@@ -150,6 +150,7 @@ async function loadCycles() {
     <tr>
       <td>${escapeHtml(c.cycle_code)}</td>
       <td>${escapeHtml(c.rfid_tag_id)}</td>
+      <td>${escapeHtml(c.gps_tracker_id)}</td>
       <td>${c.cycle_types?.name || '-'}</td>
       <td>${escapeHtml(c.status || '-')}</td>
       <td>${c.locations?.name || '-'}</td>
