@@ -193,7 +193,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // load accessories
   const { data: accessories } = await supabase
     .from('accessories')
-    .select('id, name, rental_price, availability_status')
+    .select('id, name, rental_price, availability_status, description')
     .eq('availability_status', 'available')
     .order('name');
   ACCESSORIES_AVAILABLE = accessories || [];
@@ -230,11 +230,35 @@ function renderAvailableUI() {
     accList.innerHTML = `<div class="small-muted">No accessories available</div>`;
   } else {
     accList.innerHTML = ACCESSORIES_AVAILABLE.map(a => `
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="${a.id}" id="acc-${a.id}" data-price="${a.rental_price}">
-        <label class="form-check-label" for="acc-${a.id}">${escapeHtml(a.name)} — ₹${a.rental_price}</label>
+      <div class="mb-1">
+      <div class="accessory-card border rounded p-2 bg-light" 
+          data-id="${a.id}" 
+          data-price="${a.rental_price}">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-semibold text-dark">${escapeHtml(a.name)}</span>
+          <span class="text-success fw-bold">₹${a.rental_price}</span>
+        </div>
+        ${a.description ? `<div class="text-muted small mt-1">${escapeHtml(a.description)}</div>` : ''}
+      </div>
       </div>
     `).join('');
+
+    // --- Selection logic ---
+    const selectedAccessories = new Set();
+
+    document.querySelectorAll('.accessory-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        if (selectedAccessories.has(id)) {
+          selectedAccessories.delete(id);
+          card.classList.remove('selected');
+        } else {
+          selectedAccessories.add(id);
+          card.classList.add('selected');
+        }
+        console.log('Selected Accessories:', Array.from(selectedAccessories));
+      });
+    });
   }
 
   if (startRentalBtn) {
@@ -326,6 +350,8 @@ async function startRentalHandler() {
   const phoneEl = document.getElementById('custPhone');
   const name = nameEl?.value?.trim() || '';
   const phone = phoneEl?.value?.trim() || '';
+  const fileInput = document.getElementById("rentalImage");
+  let uploadedImageUrl = null;
 
   if (!name) return alert('Customer name required');
 
@@ -353,8 +379,8 @@ async function startRentalHandler() {
       }
     }
 
-    // 2. Selected accessories
-    const checked = Array.from(accList.querySelectorAll('input[type=checkbox]:checked')).map(i => i.value);
+    // 2. Selected accessories (from highlighted cards)
+    const selected = Array.from(accList.querySelectorAll('.accessory-card.selected')).map(card => card.dataset.id);
 
     // 3. Insert rental
     const nowIso = new Date().toISOString();
@@ -367,7 +393,8 @@ async function startRentalHandler() {
           out_time: nowIso,
           status: 'active',
           staff_id: currentSession.user.id,
-          location_id: CURRENT_CYCLE.location_id
+          location_id: CURRENT_CYCLE.location_id,
+          image_url: uploadedImageUrl || null,
         }
       ])
       .select()
@@ -375,12 +402,33 @@ async function startRentalHandler() {
 
     if (insErr) throw insErr;
 
-    // 4. Accessories link + mark in_use
-    if (checked.length) {
-      const rows = checked.map(id => ({ rental_id: rental.id, accessory_id: id, quantity: 1 }));
-      await supabase.from('rental_accessories').insert(rows);
-      await supabase.from('accessories').update({ availability_status: 'in_use' }).in('id', checked);
+    // Only upload if file is selected
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const fileName = `rental_${Date.now()}_${rental.id}`;
+      const { data, error } = await supabase.storage.from("images").upload(fileName, file);
+      if (error) {
+        console.error("Error uploading image:", error);
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from("images")
+          .getPublicUrl(fileName);
+        uploadedImageUrl = publicUrlData.publicUrl;
+      }
     }
+
+// 4. Accessories link + mark in_use
+if (selected.length) {
+  const rows = selected.map(id => ({ rental_id: rental.id, accessory_id: id, quantity: 1 }));
+  const { error: accInsertError } = await supabase.from('rental_accessories').insert(rows);
+  if (accInsertError) console.error('Error inserting accessories:', accInsertError);
+
+  const { error: accUpdateError } = await supabase
+    .from('accessories')
+    .update({ availability_status: 'in_use' })
+    .in('id', selected);
+  if (accUpdateError) console.error('Error updating accessories status:', accUpdateError);
+}
 
     // 5. Update cycle status
     await supabase.from('cycles').update({ status: 'in_use' }).eq('id', CURRENT_CYCLE.id);
