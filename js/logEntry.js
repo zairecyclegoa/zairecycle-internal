@@ -147,6 +147,97 @@ async function calculatePriceUsingSlabs(rentalStartIso, accessoriesIds = [], cyc
   return { amount: Number(amount.toFixed(2)), minutes };
 }
 
+async function renderPaymentSummaryUI(rental) {
+  hideAllSections();
+  summaryUI.style.display = 'block';
+
+  const startMs = parseTimestampToUTCms(rental.out_time);
+  const endMs = parseTimestampToUTCms(rental.in_time);
+
+  summaryContent.innerHTML = `
+    <div class="summary-block">
+      <h5 class="mb-2">Pending Payment</h5>
+      <div><strong>Cycle:</strong> ${escapeHtml(CURRENT_CYCLE.cycle_code)}</div>
+      <div><strong>Start:</strong> ${formatUTCmsToIST(startMs)}</div>
+      <div><strong>End:</strong> ${formatUTCmsToIST(endMs)}</div>
+      <div><strong>Duration:</strong> ${rental.duration_minutes ?? '-'} min</div>
+      <div id="finalAmountDisplay"><strong>Charge:</strong> ₹${Number(rental.final_amount || rental.calculated_amount || 0).toFixed(2)}</div>
+
+      <div class="mt-3">
+        <button id="toggleOverrideBtn" class="btn btn-sm btn-outline-warning mb-2">Override Price</button>
+        <div id="overrideSection" style="display:none;">
+          <input id="overrideInput" type="number" class="form-control mb-2" placeholder="Enter new ₹ amount">
+          <button id="applyOverrideBtn" class="btn btn-warning btn-sm mb-3">Apply Override</button>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <label><strong>Remarks (optional):</strong></label>
+        <textarea id="remarksInput" rows="2" class="form-control mb-3" placeholder="Add internal note..."></textarea>
+      </div>
+
+      <div class="mt-3">
+        <label><strong>Payment Method:</strong></label>
+        <select id="paymentModeSelect" class="form-select mb-3">
+          <option value="">Select method</option>
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Card">Card</option>
+          <option value="Other">Other</option>
+        </select>
+        <button id="markPaidBtn" class="btn btn-success w-100">Mark as Paid & Close</button>
+      </div>
+    </div>
+  `;
+
+  // Handlers
+  const overrideBtn = document.getElementById('toggleOverrideBtn');
+  const overrideSection = document.getElementById('overrideSection');
+  const applyOverrideBtn = document.getElementById('applyOverrideBtn');
+  const overrideInput = document.getElementById('overrideInput');
+  const amountDisplay = document.getElementById('finalAmountDisplay');
+  const paymentBtn = document.getElementById('markPaidBtn');
+  const remarksEl = document.getElementById('remarksInput');
+  const modeSelect = document.getElementById('paymentModeSelect');
+
+  overrideBtn.onclick = () => {
+    overrideSection.style.display = overrideSection.style.display === 'none' ? 'block' : 'none';
+  };
+
+  applyOverrideBtn.onclick = async () => {
+    const val = parseFloat(overrideInput.value);
+    if (isNaN(val) || val <= 0) return alert('Enter valid amount');
+    const { error } = await supabase
+      .from('rentals')
+      .update({ final_amount: val })
+      .eq('id', rental.id);
+    if (error) return alert('Failed to override: ' + error.message);
+    amountDisplay.innerHTML = `<strong>Charge:</strong> ₹${val.toFixed(2)} <small class="text-warning">(Overridden)</small>`;
+    alert('✅ Final amount updated.');
+  };
+
+  paymentBtn.onclick = async () => {
+    const mode = modeSelect.value;
+    if (!mode) return alert('Please select payment mode.');
+    const remarks = remarksEl.value.trim();
+    const { error } = await supabase
+      .from('rentals')
+      .update({
+        payment_mode: mode,
+        remarks,
+        status: 'completed',
+        payment_recorded: true
+      })
+      .eq('id', rental.id);
+    if (error) alert('Payment update failed: ' + error.message);
+    else {
+      alert('✅ Payment recorded & rental closed.');
+      window.location.reload();
+    }
+  };
+}
+
+
 
 /* ============
    Main flow: init + render
@@ -198,12 +289,28 @@ window.addEventListener('DOMContentLoaded', async () => {
     .order('name');
   ACCESSORIES_AVAILABLE = accessories || [];
 
-  // render according to status
-  if (cycle.status === 'available') renderAvailableUI();
-  else if (cycle.status === 'in_use' || cycle.status === 'rented' || cycle.status === 'active') await renderInUseUI();
-  else {
-    if (message) message.innerHTML = `<div class="text-secondary">Cycle status: ${escapeHtml(cycle.status)}</div>`;
-  }
+  // --- Check for pending unpaid rental before anything ---
+const { data: unpaidRental } = await supabase
+  .from('rentals')
+  .select('*')
+  .eq('cycle_id', cycle.id)
+  .eq('status', 'ended')
+  .eq('payment_recorded', false)
+  .order('in_time', { ascending: false })
+  .limit(1)
+  .maybeSingle();
+
+if (unpaidRental) {
+  CURRENT_RENTAL = unpaidRental;
+  await renderPaymentSummaryUI(unpaidRental);
+} else if (cycle.status === 'available') {
+  renderAvailableUI();
+} else if (cycle.status === 'in_use' || cycle.status === 'rented' || cycle.status === 'active') {
+  await renderInUseUI();
+} else {
+  if (message) message.innerHTML = `<div class="text-secondary">Cycle status: ${escapeHtml(cycle.status)}</div>`;
+}
+
 
   showLoading(false);
 });
@@ -466,7 +573,8 @@ async function endRentalHandler(rental) {
         duration_minutes: minutes,
         calculated_amount: amount,
         final_amount: amount,
-        status: 'completed'
+        status: 'ended',
+        payment_recorded: false
       })
       .eq('id', rental.id);
 
@@ -535,23 +643,33 @@ async function endRentalHandler(rental) {
     const modeSelect = document.getElementById('paymentModeSelect');
 
     // Toggle override visibility
-    overrideBtn.onclick = () => {
-      overrideSection.style.display = overrideSection.style.display === 'none' ? 'block' : 'none';
-    };
+overrideBtn.onclick = () => {
+  if (overrideSection.style.display === 'none' || !overrideSection.style.display) {
+    overrideSection.style.display = 'block';
+  } else {
+    overrideSection.style.display = 'none';
+  }
+};
 
-    // Apply override
-    applyOverrideBtn.onclick = async () => {
-      const val = parseFloat(overrideInput.value);
-      if (isNaN(val) || val <= 0) return alert('Enter valid amount');
-      const { error } = await supabase
-        .from('rentals')
-        .update({ final_amount: val })
-        .eq('id', rental.id);
+// Apply override
+applyOverrideBtn.onclick = async () => {
+  const val = parseFloat(overrideInput.value);
+  if (isNaN(val) || val <= 0) return alert('Enter valid amount');
 
-      if (error) return alert('Failed to override: ' + error.message);
-      amountDisplay.innerHTML = `<strong>Charge:</strong> ₹${val.toFixed(2)} <small class="text-warning">(Overridden)</small>`;
-      alert('✅ Final amount updated.');
-    };
+  const { error } = await supabase
+    .from('rentals')
+    .update({ final_amount: val })
+    .eq('id', rental.id);
+
+  if (error) return alert('Failed to override: ' + error.message);
+
+  amountDisplay.innerHTML = `<strong>Charge:</strong> ₹${val.toFixed(2)} <small class="text-warning">(Overridden)</small>`;
+  alert('✅ Final amount updated.');
+
+  // Force hide section after applying override
+  overrideSection.style.display = 'none';
+};
+
 
     // Final payment & close
     paymentBtn.onclick = async () => {
@@ -564,12 +682,14 @@ async function endRentalHandler(rental) {
         .update({
           payment_mode: mode,
           remarks,
-          status: 'completed'
+          status: 'completed',
+          payment_recorded : true
         })
         .eq('id', rental.id);
 
       if (error) alert('Payment update failed: ' + error.message);
       else {
+
         alert('✅ Payment recorded & rental closed.');
         window.location.reload();
       }

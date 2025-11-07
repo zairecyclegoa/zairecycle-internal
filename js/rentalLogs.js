@@ -58,7 +58,7 @@ async function loadRentals() {
   const rows = rentals || [];
 
   // Active rentals = status === 'active'
-  const active = rows.filter(r => r.status === 'active');
+  const active = rows.filter(r => ['active', 'ended'].includes(r.status));
 
   // Past rentals = not active (completed/cancelled etc) AND have in_time
   const past = rows.filter(r => r.status !== 'active' && r.in_time);
