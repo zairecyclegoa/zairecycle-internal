@@ -1,147 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ZaiReCycle | Maintenance</title>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Shared CSS -->
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    .maintenance-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: calc(100vh - 100px);
-      text-align: center;
-    }
+    /* small layout fixes */
+    .summary-card { border-radius: 10px; }
+    .damage-card { cursor: default; padding: 0.75rem 1rem; }
+    .card-scroll { max-height: 520px; overflow:auto; }
+    .small-muted { font-size:.88rem; color:#6c757d; }
+    .accessory-chip { display:inline-block; padding:.18rem .5rem; background:#f1f3f5; border-radius:5px; font-size:.8rem; margin-right:4px; }
 
-    .maintenance-img {
-      width: 250px;
-      max-width: 80%;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
-    }
+    /* reduce big white gaps by keeping list-group-item compact */
+    .list-group-item { padding-top: .6rem; padding-bottom: .6rem; }
+    .damage-meta { font-size: .92rem; color: #495057; }
+    .damage-actions button { margin-right: .35rem; margin-bottom: .2rem; }
+    /* Report damage button — filled red for emphasis */
+    #btnAddDamage { background:#d9534f; color: #fff; border: none; }
+    #btnAddDamage:hover { background:#c9302c; color:#fff; }
 
-    @keyframes float {
+    /* small responsive tweak so right-meta lines up */
+    .damage-right-meta { min-width: 140px; text-align: right; font-size: .85rem; color:#6c757d; }
 
-      0%,
-      100% {
-        transform: translateY(0);
-      }
+    /* accessory-only visual tag */
+    .chip-accessory { background:#fff3cd; border:1px solid #ffeeba; padding:.18rem .5rem; border-radius: .25rem; font-size:.82rem; }
 
-      50% {
-        transform: translateY(-10px);
-      }
-    }
+    /* modal compact inputs */
+    .modal .form-label.small { font-size:.85rem; }
 
-    h2 {
-      font-weight: 700;
-      color: #343a40;
-    }
-
-    p {
-      color: #6c757d;
-      font-size: 1.1rem;
-    }
+    /* highlight card when there's a photo */
+    .has-photo { border-left: 4px solid #0d6efd; }
   </style>
 </head>
-
 <body>
+<button class="btn btn-dark d-lg-none sidebar-toggle"><i class="fa-solid fa-bars"></i></button>
 
-  <div class="d-flex" id="layout-wrapper">
-    <!-- Sidebar -->
-    <nav class="sidebar bg-dark text-white p-3 d-flex flex-column justify-content-between" id="sidebar">
-      <div>
-        <div class="sidebar-header text-center mb-4">
-          <img src="assets/logo_v3.png" alt="ZaiReCycle Logo" class="sidebar-logo mb-2" />
-          <h5 class="fw-bold">ZaiReCycle</h5>
+<div class="d-flex" id="layout-wrapper">
+
+  <!-- Sidebar -->
+  <nav class="sidebar bg-dark text-white p-3 d-flex flex-column justify-content-between" id="sidebar">
+    <div>
+      <div class="sidebar-header text-center mb-4">
+        <img src="assets/logo_v3.png" class="sidebar-logo mb-2" alt="logo">
+        <h5 class="fw-bold">ZaiReCycle</h5>
+      </div>
+
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link text-white" href="dashboard.html"><i class="fa-solid fa-house me-2"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="inventory.html"><i class="fa-solid fa-bicycle me-2"></i>Inventory</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="rentalLogs.html"><i class="fa-solid fa-clipboard-list me-2"></i>Rental Logs</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="archive.html"><i class="fa-solid fa-chart-line me-2"></i>Reports & Archive</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="management.html"><i class="fa-solid fa-user-gear me-2"></i>Management</a></li>
+        <li class="nav-item"><a class="nav-link active text-white" href="maintenance.html"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Maintenance</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="systemInfo.html"><i class="fa-solid fa-database me-2"></i>System Info</a></li>
+      </ul>
+    </div>
+
+    <div class="text-center mt-auto">
+      <button id="logout" class="btn btn-danger w-100"><i class="fa-solid fa-power-off me-2"></i>Logout</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="flex-grow-1 p-4">
+    <main class="container-fluid">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Maintenance</h3>
+        <div class="d-flex gap-2">
+          <button id="btnAddDamage" class="btn" data-bs-toggle="modal" data-bs-target="#addDamageModal">
+            <i class="fa-solid fa-circle-plus me-1"></i> Report Damage
+          </button>
+          <button id="btnAddRequest" class="btn btn-outline-primary d-none" disabled>
+            <i class="fa-solid fa-tools me-1"></i> Create Request
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+          <div class="card summary-card p-3">
+            <small class="text-muted">Pending / Active</small>
+            <h4 id="count-pending" class="mt-2 mb-0">--</h4>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card summary-card p-3">
+            <small class="text-muted">Cycles in Maintenance</small>
+            <h4 id="count-maintenance" class="mt-2 mb-0">--</h4>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card summary-card p-3">
+            <small class="text-muted">Accessory Repairs</small>
+            <h4 id="count-accessories" class="mt-2 mb-0">--</h4>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card summary-card p-3">
+            <small class="text-muted">Completed History</small>
+            <h4 id="count-history" class="mt-2 mb-0">--</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS (full width) -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white fw-bold">Quick Actions</div>
+        <div class="card-body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label small">Change cycle status</label>
+              <div class="d-flex gap-2">
+                <select id="quickCycleSelect" class="form-select form-select-sm"></select>
+                <select id="quickCycleStatus" class="form-select form-select-sm" style="width:150px;">
+                  <option value="available">Available</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+                <button id="applyCycleStatus" class="btn btn-sm btn-primary">Apply</button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small">Accessory-only damage</label>
+              <div class="d-flex gap-2">
+                <select id="quickAccessorySelect" class="form-select form-select-sm"></select>
+                <button id="quickAccessoryDamage" class="btn btn-outline-warning btn-sm">Report</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE DAMAGES (full width) -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Active & Pending Damages</strong>
+            <div class="small-muted">Showing statuses: pending, under_repair</div>
+          </div>
+
+          <div class="d-flex gap-2 align-items-center">
+            <input id="quickSearch" type="search" class="form-control form-control-sm" placeholder="Search damage...">
+            <button id="refreshDamages" class="btn btn-sm btn-light"><i class="fa-solid fa-rotate"></i></button>
+          </div>
         </div>
 
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link text-white" href="dashboard.html">
-              <i class="fa-solid fa-house me-2"></i>Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="inventory.html">
-              <i class="fa-solid fa-bicycle me-2"></i>Inventory
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="rentalLogs.html"><i class="fa-solid fa-clipboard-list me-2"></i>Rental
-              Logs</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white admin-only" href="archive.html"><i class="fa-solid fa-chart-line me-2"></i>Reports &
-              Archive</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="management.html">
-              <i class="fa-solid fa-user-gear me-2"></i>Management
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active text-white" href="maintenance.html">
-              <i class="fa-solid fa-screwdriver-wrench me-2"></i>Maintenance
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white admin-only" href="systemInfo.html"><i
-                class="fa-solid fa-database me-2"></i>System Info</a>
-          </li>
-        </ul>
+        <div id="damages-active" class="list-group list-group-flush card-scroll"></div>
       </div>
 
-      <!-- Logout -->
-      <div class="text-center mt-auto">
-        <button id="logout" class="btn btn-danger w-100">
-          <i class="fa-solid fa-power-off me-2"></i>Logout
-        </button>
+      <!-- HISTORY (bottom full width) -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <span>Damage History</span>
+          <select id="historyFilter" class="form-select form-select-sm" style="width:150px;">
+            <option value="all">All</option>
+            <option value="repaired">Repaired</option>
+            <option value="scrapped">Scrapped</option>
+          </select>
+        </div>
+        <div id="damages-history" class="list-group list-group-flush card-scroll" style="max-height:420px;"></div>
       </div>
-    </nav>
 
-    <!-- Main content -->
-    <div class="flex-grow-1 p-4">
-      <!-- Mobile Toggle Button -->
-      <button class="btn btn-outline-dark d-lg-none mb-3" id="menu-toggle">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <h3 class="fw-bold mb-4">Maintenance</h3>
+    </main>
+  </div>
+</div>
 
-      <div class="maintenance-container">
-        <img class="maintenance-img" src="https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif"
-          alt="Under Maintenance" />
-        <h2>Oops! This Page is Under Maintenance 🔧</h2>
-        <p>Even our maintenance page needs a bit of maintenance 😅<br>We’ll be back soon!</p>
-        <a href="dashboard.html" class="btn btn-success mt-3">
-          <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-        </a>
-      </div>
+<!-- Add Damage Modal -->
+<div class="modal fade" id="addDamageModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <form id="damageForm" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Report Damage</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+
+          <div id="damageFormAlert"></div>
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label">Cycle (optional)</label>
+              <select id="damageCycle" class="form-select">
+                <option value="">(none)</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Link to last rental</label>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="linkLastRental">
+                <label class="form-check-label small">Use last rental of selected cycle</label>
+              </div>
+              <div id="lastRentalPreview" class="small-muted mt-1"></div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Accessory (optional)</label>
+              <select id="damageAccessory" class="form-select">
+                <option value="">(none)</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Damage type</label>
+              <input id="damageType" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Estimated cost (optional)</label>
+              <input id="damageCost" type="number" min="0" step="0.01" class="form-control">
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label">Description</label>
+              <textarea id="damageDesc" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label">Photo (optional)</label>
+              <input id="damagePhoto" type="file" accept="image/*" class="form-control">
+              <div class="small-muted">Uploaded to 'images' bucket</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label small">Status</label>
+              <select id="damageStatus" class="form-select">
+                <option value="pending">pending</option>
+                <option value="under_repair">under_repair</option>
+                <option value="repaired">repaired</option>
+                <option value="scrapped">scrapped</option>
+              </select>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="saveDamageBtn" class="btn btn-warning" type="submit">Save</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="js/supabaseClient.js"></script>
-  <script type="module" src="js/logout.js"></script>
-  <script type="module" src="js/maintenance.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/supabaseClient.js"></script>
+<script type="module" src="js/maintenance.js"></script>
 </body>
-<!-- Sidebar Toggle -->
-<script>
-  document.getElementById("menu-toggle").addEventListener("click", () => {
-    document.getElementById("sidebar").classList.toggle("active");
-  });
-</script>
-
 </html>

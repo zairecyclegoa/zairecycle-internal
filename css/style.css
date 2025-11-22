@@ -414,3 +414,75 @@ body {
   border-color: #3b82f6 !important;
   box-shadow: 0 0 0 2px rgba(59,130,246,0.3);
 }
+
+/* Remove ALL spacing from list rows */
+#damages-active .list-group-item,
+#damages-history .list-group-item {
+  padding: 6px 10px !important;
+  margin: 0 !important;
+  border-width: 0 0 1px 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* Remove internal extra spacing */
+.damage-card * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1.25 !important;
+}
+
+/* Ensure accessory labels and meta text are tight */
+.damage-card .small,
+.damage-card .small-muted,
+.damage-card .meta {
+  line-height: 1.2 !important;
+  display: block;
+}
+
+/* Tighten button row */
+.damage-card .btn {
+  padding: 2px 6px !important;
+  font-size: 0.75rem !important;
+}
+
+/* Tighten photo button */
+.btn-view-photo {
+  padding: 2px 5px !important;
+}
+
+/* Make the entire list compact */
+.card-scroll {
+  padding: 0 !important;
+}
+
+/* Ultra-compact row */
+.damage-row {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* Left + right sections */
+.damage-left,
+.damage-right {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.15 !important;
+}
+
+/* Tight right block */
+.damage-right {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Zero spacing for the entire damage block */
+.list-group-item {
+  padding: 6px 10px !important;
+  margin: 0 !important;
+  border-width: 0 0 1px 0 !important;
+  line-height: 1.2 !important;
+}
